@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Simple Chat</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+		}
+
+		#chat-box {
+			width: 800px;
+			height: 400px;
+			border: 1px solid #ccc;
+			overflow-y: scroll;
+			padding: 10px;
+		}
+
+		#message-input {
+			width: 200px;
+			padding: 5px;
+		}
+
+		.box {
+			margin: 10px;
+		}
+	</style>
+</head>
+
+
+<body>
+
+	<div id="chat-box"></div>
+	<input type="text" id="message-input" placeholder="Type a message...">
+	<button onclick="startConversation()">Send</button>
+
+	<script>
+
+		const generateConversation = async (userMessages, assistantMessages) => {
+			try {
+				const response = await fetch('http://localhost:5000/conversation_api', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'Access-Control-Allow-Origin': '*'
+					},
+					body: JSON.stringify({
+						userMessages,
+						assistantMessages,
+					}),
+				});
+				const data = await response.json();
+				console.log('Zephyr: ' + data.generated_text);
+				const message = data.generated_text;
+				return message;
+			} catch (error) {
+				console.error(
+					`Error: unable to fetch prompt: "${prompt}" from the Zephyr Server`,
+					error
+				);
+				return '';
+			}
+		}
+
+		zephyrMessages =
+			[
+				'I see, from the few words which Polus has uttered, that he has attended more to the art which is called rhetoric than to dialectic.',
+				'Because, Polus, when Chaerephon asked you what was the art which Gorgias knows, you praised it as if you were answering someone who found fault with it, but you never said what the art was. ',
+				'Yes, indeed, but that was no answer to the question: nobody asked what was the quality, but what was the nature, of the art, and by what name we were to describe Gorgias. And I would still beg you briefly and clearly, as you answered Chaerephon when he asked you at first, to say what this art is, and what we ought to call Gorgias: Or rather, Gorgias, let me turn to you, and ask the same question, what are we to call you, and what is the art which you profess? ',
+				'And will you continue to ask and answer questions, Gorgias, as we are at present doing and reserve for another occasion the longer mode of speech which Polus was attempting? Will you keep your promise, and answer shortly the questions which are asked of you? '
+			];
+
+
+		mistralMessages =
+			[
+				'What makes you say so, Socrates? ',
+				'Why, did I not say that it was the noblest of arts? ',
+				' Rhetoric, Socrates, is my art. ',
+				'I should wish to do so. '
+			];
+
+		// Takes user input and calls the API for Isabella's response
+		const startConversation = async () => {
+			var messageInput = document.getElementById("message-input");
+			var mistralMessage = messageInput.value;
+			let apiCallCounter = 0;
+			mistralMessages.push(mistralMessage);
+			while (apiCallCounter < 10) {
+				const zephyrMessage = await generateConversation(
+					mistralMessages,
+					zephyrMessages,
+				);
+
+				appendMessage(zephyrMessage + '\n\n');
+
+				zephyrMessages.push(zephyrMessage + '\n');
+
+				mistralMessage = await generateConversation(
+					zephyrMessages,
+					mistralMessages
+				);
+
+				mistralMessages.push(mistralMessage);
+				appendMessage(mistralMessage + '\n\n');
+
+				++apiCallCounter;
+			}
+		};
+
+
+
+		function appendMessage(message) {
+			var chatBox = document.getElementById("chat-box");
+			var messageElement = document.createElement("div");
+			messageElement.classList.add('box');
+			messageElement.textContent = message;
+			chatBox.appendChild(messageElement);
+
+			// Scroll to the bottom of the chat box to show the latest message
+			chatBox.scrollTop = chatBox.scrollHeight;
+		}
+	</script>
+
+</body>
+
+</html>
