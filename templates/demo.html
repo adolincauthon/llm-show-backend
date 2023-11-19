@@ -38,7 +38,10 @@
 
 	<script>
 
-		const generateConversation = async (userMessages, assistantMessages) => {
+		// Takes a prompt telling the system what kind of agent they are, and a chat history
+		// between user and assistant, userMessages will have the latest generated message
+		// in the conversation
+		const generateConversation = async (sys_prompt, userMessages, assistantMessages) => {
 			try {
 				const response = await fetch('http://localhost:5000/conversation_api', {
 					method: 'POST',
@@ -47,12 +50,13 @@
 						'Access-Control-Allow-Origin': '*'
 					},
 					body: JSON.stringify({
+						sys_prompt,
 						userMessages,
 						assistantMessages,
 					}),
 				});
 				const data = await response.json();
-				console.log('Zephyr: ' + data.generated_text);
+				console.log(data.generated_text);
 				const message = data.generated_text;
 				return message;
 			} catch (error) {
@@ -64,7 +68,7 @@
 			}
 		}
 
-		zephyrMessages =
+		const zephyrMessages =
 			[
 				'I see, from the few words which Polus has uttered, that he has attended more to the art which is called rhetoric than to dialectic.',
 				'Because, Polus, when Chaerephon asked you what was the art which Gorgias knows, you praised it as if you were answering someone who found fault with it, but you never said what the art was. ',
@@ -73,7 +77,7 @@
 			];
 
 
-		mistralMessages =
+		const mistralMessages =
 			[
 				'What makes you say so, Socrates? ',
 				'Why, did I not say that it was the noblest of arts? ',
@@ -81,7 +85,9 @@
 				'I should wish to do so. '
 			];
 
-		// Takes user input and calls the API for Isabella's response
+		const sys_prompt = 'You are a greek philosopher. You like to engage in deep conversations and give meaningful responses. After each response you ask a new question. Your responses must be 4 sentences or less.'
+
+		// Starts a conversation between the LLMs
 		const startConversation = async () => {
 			var messageInput = document.getElementById("message-input");
 			var mistralMessage = messageInput.value;
@@ -89,6 +95,7 @@
 			mistralMessages.push(mistralMessage);
 			while (apiCallCounter < 10) {
 				const zephyrMessage = await generateConversation(
+					sys_prompt,
 					mistralMessages,
 					zephyrMessages,
 				);
@@ -98,6 +105,7 @@
 				zephyrMessages.push(zephyrMessage + '\n');
 
 				mistralMessage = await generateConversation(
+					sys_prompt,
 					zephyrMessages,
 					mistralMessages
 				);
@@ -111,6 +119,7 @@
 
 
 
+		//Handles adding chat responses to server
 		function appendMessage(message) {
 			var chatBox = document.getElementById("chat-box");
 			var messageElement = document.createElement("div");

@@ -24,8 +24,9 @@ def conversation_api():
             token="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")
         data = request.get_json()
         user_messages = data.get('userMessages')
+        sys_prompt = data.get('sys_prompt')
         assistant_messages = data.get('assistantMessages')
-        prompt = '<|system|> You are a greek philosopher. You like to engage in deep conversations and give meaningful responses. After each response you ask a new question. Your responses must be 4 sentences or less.</s>'
+        prompt = f'<|system|> {sys_prompt} </s>'
         for i in range(len(user_messages)):
             prompt += f'<|user|> {user_messages[i]}\n </s>'
             if i != len(user_messages) - 1:
