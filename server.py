@@ -10,11 +10,13 @@ CORS(app, resources=r'/*')
 app.config['CORS_HEADERS'] = 'Content-Type,Access-Control-Allow-Origin'
 
 
+# Route for getting demo page
 @app.route('/', methods=['GET'])
 def homepage():
     return render_template('demo.html')
 
 
+# Route for hitting the huggingface API
 @app.route('/conversation_api', methods=['POST'])
 def conversation_api():
     try:
@@ -33,6 +35,21 @@ def conversation_api():
         completion = hugging_client.text_generation(
             prompt,  max_new_tokens=150, model=chat_model, return_full_text=False, temperature=.7)
         print(completion)
+        resp = make_response({'generated_text': completion}, 200)
+        return resp
+
+    except Exception as e:
+        return make_response({"error": "error parsing post"}, 500)
+
+# Route for hitting GPT4All
+
+
+@app.route('/gpt4all', methods=['POST'])
+def gpt4all():
+    try:
+        # Get data from GPT4all here and store the response in completion
+        completion = ''
+        # returns data to frontend
         resp = make_response({'generated_text': completion}, 200)
         return resp
 
