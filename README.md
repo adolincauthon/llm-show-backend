@@ -1,6 +1,6 @@
 ## Overview
 
-This repo contains the code for the LLM-Show API. Currently prototyping HuggingFace and GPT4All as models.
+This repo contains the code for the LLM-Show API. Currently prototyping HuggingFace and GPT4All models.
 
 ### Install
 
