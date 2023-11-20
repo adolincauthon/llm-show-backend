@@ -21,7 +21,7 @@ def homepage():
 def conversation_api():
     try:
         hugging_client = InferenceClient(
-            token="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")
+            token="HUGGING_FACE_TOKEN")
         data = request.get_json()
         user_messages = data.get('userMessages')
         sys_prompt = data.get('sys_prompt')

@@ -8,7 +8,7 @@ To install the required packages in a virtual environment run the following comm
 
 ```
 python -m venv .venv
-source .venv/env/bin/activate
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
