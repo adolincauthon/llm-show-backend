@@ -15,7 +15,7 @@ pip install -r requirements.txt
 ### Running the program
 
 I have included the launch.json file under the .vscode directory in order to run the program in debug mode. For debugging
-run it using VS Code's debugger. Alternatively you can run server.py like a regular python program.
+run it using VS Code's debugger. Alternatively you can run server.py like a regular python program. The huggingface token will be read from the environment variable `HUGGING_TOKEN`
 
 ### Modifying
 
