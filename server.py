@@ -49,6 +49,10 @@ def firebase_conversation():
         userMessages = messages.get('userMessages')
         assistantMessages = messages.get('assistantMessages')
         count = data.get('count', 5)
+    except Exception as e:
+        return make_response({"error": "error parsing post"}, 400)
+
+    try:
         # iterate through conversation and update firebase records
         while count > 0:
             assistantCompletion = generic_conversation(
@@ -64,7 +68,7 @@ def firebase_conversation():
         return make_response(200)
 
     except Exception as e:
-        return make_response({"error": "error parsing post"}, 500)
+        return make_response({"error": "Issue with huggingface client"}, 500)
 
 
 # Route for hitting GPT4All
