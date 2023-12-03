@@ -5,11 +5,20 @@ from gpt4all_wrapper import GPT
 def main():
     gpt = GPT()
     test(gpt, 5)
-    for i in range(gpt.numModels):
-        for j in gpt.getChatHistory(i):
-            if j['role'] == 'assistant':
-                print(j['content'])
-        print("\n\n\n")
+    chat1 = gpt.getChatHistory(0)
+    chat2 = gpt.getChatHistory(1)
+    chat1_length = len(chat1)
+    chat2_length = len(chat2)
+    for i in range(max(chat1_length, chat2_length)):
+        if i < chat1_length and chat1[i]['role'] == 'assistant':
+                print('GPT-1 -> ' + chat1[i]['content'] + '\n')
+        if i < chat2_length and chat2[i]['role'] == 'assistant':
+                print('GPT-2 -> ' + chat2[i]['content'] + '\n')
+    # for i in range(gpt.numModels):
+    #     for j in gpt.getChatHistory(i):
+    #         if j['role'] == 'assistant':
+    #             print(j['content'] + '\n')
+    #     print("\n")
     gpt.endAllChatSessions()
 
 

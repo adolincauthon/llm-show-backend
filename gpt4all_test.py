@@ -56,13 +56,22 @@ test(5)
 # print(model1.current_chat_session)
 # print("\n\n\n")
 # print(model2.current_chat_session)
-for i in model1.current_chat_session:
-    if i['role'] == 'assistant':
-        print(i['content'])
-print("\n\n\n")
-for i in model2.current_chat_session:
-    if i['role'] == 'assistant':
-        print(i['content'])
+# for i in model1.current_chat_session:
+#     if i['role'] == 'assistant':
+#         print(i['content'] + '\n')
+# print("\n")
+# for i in model2.current_chat_session:
+#     if i['role'] == 'assistant':
+#         print(i['content'] + '\n')
+chat1 = model1.current_chat_session
+chat2 = model2.current_chat_session
+chat1_length = len(chat1)
+chat2_length = len(chat2)
+for i in range(max(chat1_length, chat2_length)):
+    if i < chat1_length and chat1[i]['role'] == 'assistant':
+            print('GPT-1 -> ' + chat1[i]['content'] + '\n')
+    if i < chat2_length and chat2[i]['role'] == 'assistant':
+            print('GPT-2 -> ' + chat2[i]['content'] + '\n')
 for i in chatSessions:
     i.__exit__(None,None,None)
 
