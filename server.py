@@ -15,8 +15,6 @@ def homepage():
     return render_template('demo.html')
 
 # Route for hitting the huggingface API
-
-
 @app.route('/conversation_api', methods=['POST'])
 def conversation_api():
     try:
