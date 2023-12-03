@@ -18,7 +18,20 @@
 			padding: 10px;
 		}
 
+		#chat-box-2 {
+			width: 800px;
+			height: 400px;
+			border: 1px solid #ccc;
+			overflow-y: scroll;
+			padding: 10px;
+		}
+
 		#message-input {
+			width: 200px;
+			padding: 5px;
+		}
+
+		#message-input-2 {
 			width: 200px;
 			padding: 5px;
 		}
@@ -35,6 +48,9 @@
 	<div id="chat-box"></div>
 	<input type="text" id="message-input" placeholder="Type a message...">
 	<button onclick="startConversation()">Send</button>
+	<div id="chat-box-2"></div>
+	<input type="text" id="message-input-2" placeholder="Type a message...">
+	<button onclick="startConversationGPT4all()">Send to gpt4all</button>
 
 	<script>
 
@@ -115,6 +131,35 @@
 
 				++apiCallCounter;
 			}
+		};
+
+		// Starts a conversation with gpt4all
+		const startConversationGPT4all = async () => {
+			var userPrompt = document.getElementById("message-input-2").value;
+			let apiCallCounter = 0;
+			mistralMessages.push(userPrompt);
+			// while (apiCallCounter < 10) {
+			// 	const zephyrMessage = await generateConversation(
+			// 		sys_prompt,
+			// 		mistralMessages,
+			// 		zephyrMessages,
+			// 	);
+
+			// 	appendMessage(zephyrMessage + '\n\n');
+
+			// 	zephyrMessages.push(zephyrMessage + '\n');
+
+			// 	mistralMessage = await generateConversation(
+			// 		sys_prompt,
+			// 		zephyrMessages,
+			// 		mistralMessages
+			// 	);
+
+			// 	mistralMessages.push(mistralMessage);
+			// 	appendMessage(mistralMessage + '\n\n');
+
+			// 	++apiCallCounter;
+			// }
 		};
 
 
