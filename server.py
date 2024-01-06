@@ -1,7 +1,7 @@
 from flask import Flask, make_response, render_template, request, url_for
 from flask_cors import CORS, cross_origin
-from llm.templates import generic_conversation
-from firebase_wrapper import get_message_history, set_user_message
+from prompting.templates import generic_conversation
+from controllers.firebase_wrapper import get_message_history, set_message_history, set_user_message
 
 
 app = Flask(__name__)
@@ -34,38 +34,56 @@ def conversation_api():
         return make_response({"error": "error parsing post"}, 500)
 
 
-@app.route('/firebase_conversation', methods=['POST'])
+@app.route('/new_conversation', methods=['POST'])
 def firebase_conversation():
     try:
         # pull necessary data from request
         data = request.get_json()
         user = data.get('user')
         assistant = data.get('assistant')
-        userPrompt = user.get('prompt')
-        assistantPrompt = assistant.get('prompt')
-        userRef = data.get('userRef')
-        assistantRef = data.get('assistantRef')
-        messages = get_message_history(assistantRef, userRef)
-        userMessages = messages.get('userMessages')
-        assistantMessages = messages.get('assistantMessages')
+        user_persona = data.get('userPersona')
+        assistant_persona = data.get('assistantPersona')
+        sys_prompt = f'You are {assistant_persona}. You are are speaking to {user_persona}'
         count = data.get('count', 5)
+        count = int(count)
+        user_messages = [data.get('prompt')]
+
+        data = get_message_history(assistant, user)
+        user_messages.extend(data.get('user_messages', []))
+        assistant_messages = data.get('assistant_messages', [])
+        new_user_messages = []
+        new_assistant_messages = []
+
     except Exception as e:
+        print(e)
         return make_response({"error": "error parsing post"}, 400)
 
     try:
-        # iterate through conversation and update firebase records
+        # iterate through and generate conversation
         while count > 0:
             assistantCompletion = generic_conversation(
-                assistantPrompt, assistantMessages, userMessages)
-            assistantMessages.append(assistantCompletion)
-            set_user_message(assistantRef, userRef, assistantCompletion)
+                sys_prompt, assistant_messages, user_messages)
+            assistant_messages.append(assistantCompletion)
+            new_assistant_messages.append(assistantCompletion)
 
             userCompletion = generic_conversation(
-                userPrompt, assistantMessages, userMessages)
-            userMessages.append(userCompletion)
-            set_user_message(userRef, assistantRef, userCompletion)
+                sys_prompt,  user_messages, assistant_messages)
+            user_messages.append(userCompletion)
+            new_user_messages.append(userCompletion)
+            count -= 1
 
-        return make_response(200)
+        # update firebase
+        set_message_history({
+            "id": assistant,
+            "persona": assistant_persona,
+            "messages": new_assistant_messages,
+        }, {
+            "id": user,
+            "persona": user_persona,
+            "messages": new_user_messages,
+        })
+
+        return make_response({assistant: new_assistant_messages, user: new_user_messages}, 200)
 
     except Exception as e:
         return make_response({"error": "Issue with huggingface client"}, 500)
@@ -85,4 +103,5 @@ def gpt4all():
         return make_response({"error": "error parsing post"}, 500)
 
 
-app.run()
+if __name__ == '__main__':
+    app.run()

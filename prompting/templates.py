@@ -20,7 +20,7 @@ def sys_assistant_prompt(sys_prompt: str, user_messages: list, assistant_message
     return prompt
 
 
-def generic_conversation(sys_prompt: str, user_messages: list, assistant_messages: list) -> str:
+def generic_conversation(sys_prompt: str, assistant_messages: list, user_messages: list) -> str:
     '''
     Generates a 
     :param sys_prompt:          Prompt informing the LLM how to act

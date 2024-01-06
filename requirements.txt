@@ -1,4 +1,6 @@
 pydantic
 flask
 flask_cors
+google-cloud-firestore
+firebase-admin
 huggingface_hub
